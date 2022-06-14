@@ -22,6 +22,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { HotToastModule } from '@ngneat/hot-toast';
 import { MatMenuModule } from '@angular/material/menu';
 import { ProfileComponent } from './components/profile/profile.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     provideFirestore(() => getFirestore()),
     HotToastModule.forRoot(),
     MatMenuModule,
+    MatAutocompleteModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { combineLatest, map, startWith } from 'rxjs';
+import { ProfileUser } from 'src/app/models/user-profile';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import { ChatsService } from 'src/app/services/chats.service';
 import { UsersService } from 'src/app/services/users.service';
 
 @Component({
@@ -10,9 +14,30 @@ import { UsersService } from 'src/app/services/users.service';
 export class HomeComponent implements OnInit {
   user$ = this.usersService.currentUserProfile$;
 
-  users$ = this.usersService.allUsers$;
+  searchControl = new FormControl('');
 
-  constructor(private usersService: UsersService) {}
+  users$ = combineLatest([
+    this.usersService.allUsers$,
+    this.user$,
+    this.searchControl.valueChanges.pipe(startWith('')),
+  ]).pipe(
+    map(([users, user, searchString]) =>
+      users.filter(
+        (u) =>
+          u.displayName?.toLowerCase().includes(searchString.toLowerCase()) &&
+          u.uid !== user?.uid
+      )
+    )
+  );
+
+  constructor(
+    private usersService: UsersService,
+    private chatsService: ChatsService
+  ) {}
 
   ngOnInit(): void {}
+
+  createChat(otherUser: ProfileUser) {
+    this.chatsService.createChat(otherUser).subscribe();
+  }
 }
