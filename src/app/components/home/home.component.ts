@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { combineLatest, map, startWith } from 'rxjs';
 import { ProfileUser } from 'src/app/models/user-profile';
-import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ChatsService } from 'src/app/services/chats.service';
 import { UsersService } from 'src/app/services/users.service';
 
@@ -29,6 +28,8 @@ export class HomeComponent implements OnInit {
       )
     )
   );
+
+  myChats$ = this.chatsService.myChats$;
 
   constructor(
     private usersService: UsersService,
