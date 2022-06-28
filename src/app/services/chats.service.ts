@@ -3,12 +3,16 @@ import {
   addDoc,
   collection,
   collectionData,
+  doc,
   Firestore,
+  orderBy,
   query,
+  Timestamp,
+  updateDoc,
   where,
 } from '@angular/fire/firestore';
 import { concatMap, map, Observable, take } from 'rxjs';
-import { Chat } from '../models/chat';
+import { Chat, Message } from '../models/chat';
 import { ProfileUser } from '../models/user-profile';
 import { UsersService } from './users.service';
 
@@ -59,6 +63,31 @@ export class ChatsService {
         );
       })
     );
+  }
+
+  addChatMessage(chatId: string, message: string): Observable<any> {
+    const ref = collection(this.firestore, 'chats', chatId, 'messages');
+    const chatRef = doc(this.firestore, 'chats', chatId);
+    const today = Timestamp.fromDate(new Date());
+    return this.usersService.currentUserProfile$.pipe(
+      take(1),
+      concatMap((user) =>
+        addDoc(ref, {
+          text: message,
+          senderId: user?.uid,
+          sentDate: today,
+        })
+      ),
+      concatMap(() =>
+        updateDoc(chatRef, { lastMessage: message, lastMessageDate: today })
+      )
+    );
+  }
+
+  getChatMessages$(chatId: string): Observable<Message[]> {
+    const ref = collection(this.firestore, 'chats', chatId, 'messages');
+    const queryAll = query(ref, orderBy('sentDate', 'asc'));
+    return collectionData(queryAll) as Observable<Message[]>;
   }
 
   addChatNameAndPic(currentUserId: string, chats: Chat[]): Chat[] {
