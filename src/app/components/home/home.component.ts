@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { combineLatest, map, startWith, switchMap, tap } from 'rxjs';
+import { combineLatest, map, switchMap, tap } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import { ProfileUser } from 'src/app/models/user-profile';
 import { ChatsService } from 'src/app/services/chats.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -70,7 +71,7 @@ export class HomeComponent implements OnInit {
         .subscribe(() => {
           this.scrollToBottom();
         });
-      this.messageControl.setValue('');
+      this.messageControl.setValue('', { emitEvent: false });
     }
   }
 
